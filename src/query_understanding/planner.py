@@ -2,7 +2,7 @@ import json
 import logging
 from json import JSONDecodeError
 
-from langchain_core.message import AIMessage
+from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableConfig
 
 from src.llm import LLMWrapper
