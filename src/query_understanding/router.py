@@ -1,11 +1,24 @@
+# ******************************************************************************
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# jiuwen-deepsearch is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+#          http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+# ******************************************************************************
+
 import logging
-from langchain_core.tools import tool
-from langchain_core.runnables import RunnableConfig
 from typing import Annotated
 
-from src.manager.search_context import SearchContext
-from src.prompts.template import apply_system_propmt
+from langchain_core.runnables import RunnableConfig
+from langchain_core.tools import tool
+
 from src.llm.llm_wrapper import LLMWrapper
+from src.manager.search_context import SearchContext
+from src.prompts.template import apply_system_prompt
 
 logging = logging.getLogger(__name__)
 
@@ -20,6 +33,7 @@ def send_to_planner(
     """
     return
 
+
 def classify_query(context: SearchContext, config: RunnableConfig) -> (bool, str):
     """
         Query routing: Determine whether to enter the deep (re)search process.
@@ -33,7 +47,7 @@ def classify_query(context: SearchContext, config: RunnableConfig) -> (bool, str
             str: language locale.
     """
     logging.info(f"Begin query classification operation.")
-    prompts = apply_system_propmt("entry", context, config)
+    prompts = apply_system_prompt("entry", context, config)
     response = (
         LLMWrapper("basic")
         .bind_tools([send_to_planner])
