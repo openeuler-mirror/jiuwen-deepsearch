@@ -8,8 +8,8 @@
 # MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 # See the Mulan PSL v2 for more details.
 
-import logging
 import asyncio
+import logging
 
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
@@ -17,9 +17,10 @@ from langgraph.types import Command
 
 from src.llm.llm_wrapper import LLMWrapper
 from src.manager.search_context import SearchContext, TaskType
+from src.prompts import apply_system_prompt
 from src.query_understanding.planner import Planner
 from src.query_understanding.router import classify_query
-from src.prompts import apply_system_prompt
+from src.report import Reporter, ReportLang, ReportFormat, ReportStyle
 from src.retrieval.collector import Collector
 
 logger = logging.getLogger(__name__)
@@ -188,7 +189,7 @@ def reporter_node(context: SearchContext, config: RunnableConfig) -> Command:
     success, report_str = reporter.generate_report(context, config)
     if not success:
         return Command(
-            update={"report": "error: " + report_str}
+            update={"report": "error: " + report_str},
             goto="__end__"
         )
 

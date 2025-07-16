@@ -12,11 +12,11 @@
 # ******************************************************************************/
 import logging
 
-from langchain_cores.tools import tool
+from langchain_core.tools import tool
 
+from src.config.tools import CrawlTool, SELECTED_CRAWL_TOOL
 from .crawler.html_parser_crawler import BasicWebCrawler
 from .crawler.jina_crawler import JinaCrawler
-from src.config.tools import CrawlTool, SELECTED_CRAWL_TOOL
 
 logger = logging.getLogger(__name__)
 

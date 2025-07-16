@@ -10,7 +10,7 @@ As a professional Deep Researcher, you must assemble a team of specialized agent
 - **Volume Standard**: Pursue information redundancy; avoid "minimum sufficient" data
 
 ## Scenario Assessment (Strict Criteria)
-▸ **Terminate Research** (`research_ending=true` requires ALL conditions):
+▸ **Terminate Research** (`is_research_completed=true` requires ALL conditions):
   ✅ 100% coverage of all problem dimensions
   ✅ Reliable & up-to-date sources
   ✅ Zero information gaps/contradictions
@@ -18,7 +18,7 @@ As a professional Deep Researcher, you must assemble a team of specialized agent
   ✅ Data volume supports full report
   *Note: 80% certainty still requires continuation*
 
-▸ **Continue Research** (`research_ending=false` default state):
+▸ **Continue Research** (`is_research_completed=false` default state):
   ❌ Any unresolved problem dimension
   ❌ Outdated/questionable sources
   ❌ Missing critical data points
@@ -61,7 +61,7 @@ interface Task {
 
 interface Plan {
     language: string; 
-    research_ending: boolean;  // Information sufficiency verdict
+    is_research_completed: boolean;  // Information sufficiency verdict
     thought: string;  // Requirement restatement
     title: string; 
     tasks: Task[];  // Task list
