@@ -15,17 +15,37 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 from langgraph.types import Command
 
+from src.llm.llm_wrapper import LLMWrapper
 from src.manager.search_context import SearchContext, TaskType
 from src.query_understanding.planner import Planner
+from src.query_understanding.router import classify_query
+from src.prompts import apply_system_prompt
+from src.retrieval.collector import Collector
 
 logger = logging.getLogger(__name__)
 
 
 def entry_node(context: SearchContext, config: RunnableConfig) -> Command:
     logger.info(f"start entry node: \n{context}")
-    return Command(
-        goto='plan_reasoning',
-    )
+    go_deepsearch, lang = classify_query(context, config)
+    if go_deepsearch:
+        return Command(
+            update={"language": lang},
+            goto="plan_reasoning",
+        )
+    else:
+        chat_prompt = apply_system_prompt("chat", context, config)
+        response = (
+            LLMWrapper("basic")
+            .invoke(chat_prompt)
+        )
+        logger.info(f"Chat response: {response.content}")
+        return Command(
+            update={
+                "messages": [AIMessage(content=response.content, name="entry")],
+            },
+            goto='__end__',
+        )
 
 
 def plan_reasoning_node(context: SearchContext, config: RunnableConfig) -> Command:
@@ -96,14 +116,31 @@ def research_manager_node(context: SearchContext, config: RunnableConfig) -> Com
         return Command(goto="__end__")
     return Command(goto="plan_reasoning")
 
-
 async def info_collector_node(context: SearchContext, config: RunnableConfig) -> Command:
     logger.info(f"start info collector node: \n{context}")
     current_plan = context.get("current_plan")
     if current_plan is None:
         return Command(goto="research_manager")
 
+    collected_infos = context.get("collected_infos", [])
+    collector = Collector(context, config)
     messages = []
+    async_collecting = []
+    collect_tasks = []
+    for task in current_plan.tasks:
+        if task.task_type == TaskType.INFO_COLLECTING and not task.task_result:
+            async_collecting.append(collector.get_info(task))
+            collect_tasks.append(task)
+    await asyncio.gather(*async_collecting)
+
+    for task in collect_tasks:
+        collected_infos.append(task.task_result)
+        messages.append(HumanMessage(
+            content=task.task_result,
+            name="info_collector",
+        ))
+        logger.info(f"The result of {task.title} is: {task.task_result}")
+
     return Command(
         update={
             "messages": messages,
