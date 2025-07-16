@@ -23,7 +23,7 @@ class SearchEngine(enum.Enum):
     BING = "bing"
     GOOGLE = "google"
     DUCKDUCKGO = "duckduckgo"
-    arxiv = "arxiv"
+    ARXIV = "arxiv"
     BRAVE_SEARCH = "brave_search"
     PUBMED = "pubmed"
     JINA_SEARCH = "jina_search"
