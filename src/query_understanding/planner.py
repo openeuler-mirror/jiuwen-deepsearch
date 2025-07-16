@@ -1,3 +1,15 @@
+# ******************************************************************************
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# jiuwen-deepsearch is licensed under Mulan PSL v2.
+# You can use this software according to the terms and conditions of the Mulan PSL v2.
+# You may obtain a copy of Mulan PSL v2 at:
+#          http://license.coscl.org.cn/MulanPSL2
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+# EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+# MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+# See the Mulan PSL v2 for more details.
+# ******************************************************************************
+
 import json
 import logging
 from json import JSONDecodeError
@@ -11,6 +23,7 @@ from src.prompts import apply_system_prompt
 from src.utils.llm_utils import normalize_json_output
 
 logger = logging.getLogger(__name__)
+
 
 class Planner:
     def __init__(self):
@@ -36,13 +49,14 @@ class Planner:
             logger.error("Planner LLM response failed JSON deserialization")
         except Exception as e:
             logger.error(f"Error when Planner generating a plan: {e}")
-        
+
         return {
             "messages": [AIMessage(name="planner", content=llm_result)],
             "current_plan": plan
         }
 
-if __name__  == "__main__":
+
+if __name__ == "__main__":
     context: SearchContext = {
         "messages": [
             {
@@ -55,4 +69,4 @@ if __name__  == "__main__":
     config = RunnableConfig
 
     planner = Planner()
-    print(planner.generate_plan(context,config))
+    print(planner.generate_plan(context, config))
