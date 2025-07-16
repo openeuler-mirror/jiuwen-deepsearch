@@ -16,7 +16,7 @@ from langchain_cores.tools import tool
 
 from .crawler.html_parser_crawler import BasicWebCrawler
 from .crawler.jina_crawler import JinaCrawler
-from src.config.tools import CrawlTool, SELETED_CRAWL_TOOL
+from src.config.tools import CrawlTool, SELECTED_CRAWL_TOOL
 
 logger = logging.getLogger(__name__)
 

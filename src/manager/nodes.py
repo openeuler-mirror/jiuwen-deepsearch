@@ -138,7 +138,24 @@ def programmer_node(context: SearchContext, config: RunnableConfig) -> Command:
 
 def reporter_node(context: SearchContext, config: RunnableConfig) -> Command:
     logger.info(f"start reporter node: \n{context}")
+    configurable = config.get("configurable", {})
+    if not configurable.get("report_style"):
+        configurable["report_style"] = ReportStyle.SCHOLARLY.value
+    if not configurable.get("report_format"):
+        configurable["report_format"] = ReportFormat.MARKDOWN
+    if not configurable.get("language"):
+        configurable["language"] = ReportLang.ZN.value
+    config["configurable"] = configurable
 
+    reporter = Reporter()
+    success, report_str = reporter.generate_report(context, config)
+    if not success:
+        return Command(
+            update={"report": "error: " + report_str}
+            goto="__end__"
+        )
+
+    context["report_generated_num"] = context.get("report_generated_num", 0) + 1
     return Command(
         update={
             "report": context.get("report", ""),
@@ -147,7 +164,6 @@ def reporter_node(context: SearchContext, config: RunnableConfig) -> Command:
         },
         goto="research_manager",
     )
-
 
 def evaluator_node(context: SearchContext, config: RunnableConfig) -> Command:
     logger.info(f"start evaluator node: \n{context}")
