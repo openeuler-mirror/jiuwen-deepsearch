@@ -12,11 +12,11 @@
 # ******************************************************************************/
 import logging
 
-from langchain_cores.tools import tool
+from langchain_core.tools import tool
 
+from src.config.tools import CrawlTool, SELECTED_CRAWL_TOOL
 from .crawler.html_parser_crawler import BasicWebCrawler
 from .crawler.jina_crawler import JinaCrawler
-from src.config.tools import CrawlTool, SELECTED_CRAWL_TOOL
 
 logger = logging.getLogger(__name__)
 
@@ -68,12 +68,12 @@ def get_crawl_tool(max_length=None):
     Returns:
         crawl tool
     """
-    if SELETED_CRAWL_TOOL in crawl_tool_mapping:
+    if SELECTED_CRAWL_TOOL in crawl_tool_mapping:
         try:
-            return crawl_tool_mapping[SELETED_CRAWL_TOOL](max_length)
+            return crawl_tool_mapping[SELECTED_CRAWL_TOOL](max_length)
         except BaseException as e:
             error_info = {"error_type": type(e).__name__, "error_msg": str(e)}
             logger.error("Crawl failed", extra=error_info)
             return error_info
     else:
-        raise ValueError(f"Unsupported crawl tool: {SELETED_CRAWL_TOOL}")
+        raise ValueError(f"Unsupported crawl tool: {SELECTED_CRAWL_TOOL}")
