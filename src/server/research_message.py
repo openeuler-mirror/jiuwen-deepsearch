@@ -15,7 +15,7 @@ from typing import Optional, List
 
 
 class ResearchRequest(BaseModel):
-    message: str = Field(None, description="user message")
+    messages: str = Field(None, description="user message")
     local_datasets: Optional[List[str]] = Field(None, description="local knowledge datasets")
     session_id: Optional[str] = Field(None, description="session id")
     max_plan_iterations: Optional[int] = Field(5, description="max planning iterations, default 5")
