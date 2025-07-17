@@ -12,15 +12,27 @@
 # ******************************************************************************/
 import logging
 from fastapi import APIRouter
+from fastapi.responses import StreamingResponse
 from .research_message import ResearchRequest, ResearchResponse
+from src.manager.workflow import Workflow
 
 router = APIRouter(
     prefix="/api",
     tags=["api"],
 )
 
+workflow = Workflow()
+workflow.build_graph()
+
 
 @router.post("/research", response_model=ResearchResponse)
 async def research(request: ResearchRequest):
     logging.info(f"research request {request.model_dump_json()}")
-    return ResearchResponse(content=request.model_dump_json())
+    return StreamingResponse(
+        workflow.run(
+            messages=request.messages,
+            session_id=request.session_id,
+            local_datasets=request.local_datasets,
+        ),
+        media_type="text/event-stream",
+    )
