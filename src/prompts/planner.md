@@ -51,10 +51,13 @@ As a professional Deep Researcher, you must assemble a team of specialized agent
 
 ## Output Rules
 
-Keep in mind, directly output the original JSON format of Plan without using "```json". The structure of the Plan is defined as follows, and each of the following fields is indispensable:
+- Keep in mind, directly output the original JSON format of `Plan` without using "```json". 
+- The structure of the `Plan` is defined as follows, and each of the following fields is indispensable.
+- Don't include the 'task_result' field in your output, it's systematically populated
+
 ```ts
 interface Task {
-    task_type: "info_collecting" | "programming";  // Task type
+    type: "info_collecting" | "programming";  // Task type
     title: string; 
     description: string;  // Precisely define collection targets
 }

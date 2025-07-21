@@ -21,14 +21,14 @@ class TaskType(str, Enum):
 
 
 class Task(BaseModel):
+    type: TaskType = Field(..., description="任务类型（枚举值）")
     title: str = Field(..., description="任务标题，简要描述任务内容")
     description: str = Field(..., description="任务详细说明，明确指定需要收集的数据或执行的编程任务")
-    task_type: TaskType = Field(..., description="枚举任务类型")
     task_result: Optional[str] = Field(default=None, description="任务执行结果，完成后由系统进行填充")
 
 
 class Plan(BaseModel):
-    language: str = Field(default="zh-CN", description="")
+    language: str = Field(default="zh-CN", description="用户语言：zh-CN、en-US等")
     title: str = Field(..., description="计划标题，概括整体目标")
     thought: str = Field(..., description="计划背后的思考过程，解释任务顺序和选择的理由")
     is_research_completed: bool = Field(..., description="是否已完成信息收集工作")
