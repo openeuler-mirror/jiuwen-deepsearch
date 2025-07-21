@@ -14,6 +14,7 @@ import json
 import logging
 from json import JSONDecodeError
 
+from langchain_core.exceptions import OutputParserException
 from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableConfig
 
@@ -47,6 +48,8 @@ class Planner:
             plan = Plan.model_validate(generated_plan)
         except JSONDecodeError:
             logger.error("Planner LLM response failed JSON deserialization")
+        except OutputParserException as e:
+            logger.error(f"LLM output does not match the structure of the plan: {e}")
         except Exception as e:
             logger.error(f"Error when Planner generating a plan: {e}")
 
@@ -66,7 +69,7 @@ if __name__ == "__main__":
         ]
     }
 
-    config = RunnableConfig
+    config = RunnableConfig()
 
     planner = Planner()
     print(planner.generate_plan(context, config))

@@ -80,11 +80,11 @@ def research_manager_node(context: SearchContext, config: RunnableConfig) -> Com
                 is_all_tasks_finish = False
                 break
         if not is_all_tasks_finish:
-            if task.task_type == TaskType.INFO_COLLECTING:
+            if task.type == TaskType.INFO_COLLECTING:
                 return Command(goto="info_collector")
-            if task.task_type == TaskType.PROGRAMMING:
+            if task.type == TaskType.PROGRAMMING:
                 return Command(goto="programmer")
-            logger.error(f"unknown task type: {task.task_type}")
+            logger.error(f"unknown task type: {task.type}")
             return Command(goto="__end__")
 
     # All task have been executed, or the collected information is enough
@@ -129,7 +129,7 @@ async def info_collector_node(context: SearchContext, config: RunnableConfig) ->
     async_collecting = []
     collect_tasks = []
     for task in current_plan.tasks:
-        if task.task_type == TaskType.INFO_COLLECTING and not task.task_result:
+        if task.type == TaskType.INFO_COLLECTING and not task.task_result:
             async_collecting.append(collector.get_info(task))
             collect_tasks.append(task)
     await asyncio.gather(*async_collecting)
@@ -159,7 +159,7 @@ def programmer_node(context: SearchContext, config: RunnableConfig) -> Command:
     collected_infos = context.get("collected_infos", [])
     messages = []
     for task in current_plan.tasks:
-        if task.task_type == TaskType.PROGRAMMING and not task.task_result:
+        if task.type == TaskType.PROGRAMMING and not task.task_result:
             task.task_result = "programming result"
             collected_infos.append(task.task_result)
             messages.append(HumanMessage(
