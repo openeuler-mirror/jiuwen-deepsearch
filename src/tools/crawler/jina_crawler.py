@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 class JinaCrawler(BaseModel):
     max_length:Optional[int] = Field(None, description="max length of crawl information")
+
     def crawl(self, url: str):
         headers = {}
         jina_api_key = os.getenv("JINA_API_KEY", "")

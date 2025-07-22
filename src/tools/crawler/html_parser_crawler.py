@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 class BasicWebCrawler(BaseModel):
     max_length: Optional[int] = Field(None, description="max length of crawl information")
+
     def crawl(self, url: str):
         response = requests.get(url)
         if response.status_code != 200:
