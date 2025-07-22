@@ -12,7 +12,7 @@
 
 import enum
 
-from .report_processor import DefaultReportFormatProcessor, ReportMarkdown
+from .report_processor import DefaultReportFormatProcessor, ReportMarkdown, ReportPPT
 
 
 class ReportStyle(enum.Enum):
@@ -25,7 +25,7 @@ class ReportStyle(enum.Enum):
 class ReportFormat(enum.Enum):
     MARKDOWN = ReportMarkdown
     WORD = None
-    PPT = None
+    PPT = ReportPPT
     EXCEL = None
     HTML = None
     PDF = None

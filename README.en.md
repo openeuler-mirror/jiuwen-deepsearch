@@ -14,7 +14,9 @@ Software architecture description
 
 #### Instructions
 
-1.  xxxx
+
+1.  PPT report generation requires local installation of marp, 
+    npm installation command: npm install -g @marp-team/marp-cli
 2.  xxxx
 3.  xxxx
 
