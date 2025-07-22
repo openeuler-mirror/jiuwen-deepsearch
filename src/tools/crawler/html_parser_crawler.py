@@ -16,13 +16,14 @@ import requests
 from bs4 import BeautifulSoup
 from pydantic import BaseModel, Field
 from typing import Optional
+from urllib.parse import urljoin
 
 logger = logging.getLogger(__name__)
 
 
 class BasicWebCrawler(BaseModel):
     max_length: Optional[int] = Field(None, description="max length of crawl information")
-    def crawl(self, url: str) -> str:
+    def crawl(self, url: str):
         response = requests.get(url)
         if response.status_code != 200:
             soup = BeautifulSoup(response.text, "lxml")
@@ -38,8 +39,21 @@ class BasicWebCrawler(BaseModel):
                     context_result += paragraph.get_text(strip=True) + "\n"
             if isinstance(self.max_length, int):
                 context_result = context_result[:self.max_length]
+            # image
+            images = []
+            img_tags = soup.find_all("img")
+            for img in img_tags:
+                img_url = img.get("src")
+                if not img_url:
+                    continue
+                image_url = urljoin(url, img_url)
+                image_alt = img.get("alt", "")
+                images.append({"image_url": image_url, "image_alt": image_alt})
             logger.info("Crawl Tool: Html request success.")
-            return context_result.strip()
+            return {
+                "text_content": context_result.strip(),
+                "images": images,
+            }
         else:
             logger.error("Crawl Tool: Html request failed.")
 
