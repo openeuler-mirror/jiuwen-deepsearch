@@ -56,7 +56,7 @@ class BasicWebCrawler(BaseModel):
                 "images": images,
             }
         else:
-            logger.error("Crawl Tool: Html request failed.")
+            logger.error(f"Crawl Tool: Html request failed, {url}, {response.content}.")
 
 
 if __name__ == "__main__":
