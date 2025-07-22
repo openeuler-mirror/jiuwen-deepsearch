@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class JinaCrawler(BaseModel):
     max_length:Optional[int] = Field(None, description="max length of crawl information")
-    def crawl(self, url: str) -> str:
+    def crawl(self, url: str):
         headers = {}
         jina_api_key = os.getenv("JINA_API_KEY", "")
         if jina_api_key:
@@ -39,7 +39,9 @@ class JinaCrawler(BaseModel):
             if isinstance(self.max_length, int):
                 context_result = context_result[:self.max_length]
             logger.info("Crawl Tool: Jina request success.")
-            return context_result.strip()
+            return {
+                "text_content": context_result.strip(),
+            }
         except BaseException as e:
             error_msg = f"Crawl Tool: Jina request failed. Error: {repr(e)}"
             logger.error(error_msg)
