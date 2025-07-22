@@ -10,6 +10,7 @@
 
 import argparse
 import asyncio
+import json
 
 from src.manager.workflow import Workflow
 
@@ -17,7 +18,11 @@ async def run_workflow(query: str):
     workflow = Workflow()
     workflow.build_graph()
     async for msg in workflow.run(query, "default_session_id", []):
-        print(f"{msg}\n")
+        msgObj = json.loads(msg)
+        if "message_type" in msgObj and msgObj["message_type"] == "AIMessageChunk" and "content" in msgObj:
+            print(msgObj["content"], end="")
+        else:
+            print(f"\n{msg}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run deepsearch project")
