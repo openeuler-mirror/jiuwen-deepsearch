@@ -46,7 +46,7 @@ def entry_node(context: SearchContext, config: RunnableConfig) -> Command:
             update={
                 "messages": [AIMessage(content=response.content, name="entry")],
             },
-            goto='__end__',
+            goto="__end__",
         )
 
 
@@ -96,9 +96,9 @@ def research_manager_node(context: SearchContext, config: RunnableConfig) -> Com
         max_plan_executed_num = config.get("configurable", {}).get("max_plan_executed_num", 0)
         if plan_executed_num >= max_plan_executed_num:
             logger.info(f"reached max plan executed num: {max_plan_executed_num}, go to reporter")
-            return Command(update={"plan_executed_num", plan_executed_num}, goto="reporter")
+            return Command(update={"plan_executed_num": plan_executed_num}, goto="reporter")
         logger.info(f"Has executed {plan_executed_num} plans, go to next plan reasoning")
-        return Command(update={"plan_executed_num", plan_executed_num}, goto="plan_reasoning")
+        return Command(update={"plan_executed_num": plan_executed_num}, goto="plan_reasoning")
 
     # The report has been generated, and if the report_evaluation is empty, go to evaluator,
     report_evaluation = context.get("report_evaluation", "")
@@ -112,7 +112,7 @@ def research_manager_node(context: SearchContext, config: RunnableConfig) -> Com
 
     logger.info(f"report evaluation not pass")
     report_generated_num = context.get("report_generated_num", 0)
-    max_report_generated_num = config.get("configurable", {}).get("report_generated_num", 0)
+    max_report_generated_num = config.get("configurable", {}).get("max_report_generated_num", 0)
     if report_generated_num >= max_report_generated_num:
         logger.info(f"reached max generation num: {max_report_generated_num}")
         return Command(goto="__end__")
@@ -193,7 +193,7 @@ def reporter_node(context: SearchContext, config: RunnableConfig) -> Command:
     if not success:
         return Command(
             update={"report": "error: " + report_str},
-            goto="__end__"
+            goto="__end__",
         )
 
     context["report_generated_num"] = context.get("report_generated_num", 0) + 1
