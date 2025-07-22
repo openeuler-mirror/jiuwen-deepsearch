@@ -17,6 +17,7 @@ from langgraph.types import Command
 
 from src.llm.llm_wrapper import LLMWrapper
 from src.manager.search_context import SearchContext, TaskType
+from src.programmer import Programmer
 from src.prompts import apply_system_prompt
 from src.query_understanding.planner import Planner
 from src.query_understanding.router import classify_query
@@ -117,6 +118,7 @@ def research_manager_node(context: SearchContext, config: RunnableConfig) -> Com
         return Command(goto="__end__")
     return Command(goto="plan_reasoning")
 
+
 async def info_collector_node(context: SearchContext, config: RunnableConfig) -> Command:
     logger.info(f"start info collector node: \n{context}")
     current_plan = context.get("current_plan")
@@ -158,9 +160,10 @@ def programmer_node(context: SearchContext, config: RunnableConfig) -> Command:
 
     collected_infos = context.get("collected_infos", [])
     messages = []
+    programmer = Programmer(config=config)
     for task in current_plan.tasks:
         if task.type == TaskType.PROGRAMMING and not task.task_result:
-            task.task_result = "programming result"
+            task.task_result = programmer.run(task)
             collected_infos.append(task.task_result)
             messages.append(HumanMessage(
                 content=task.task_result,
@@ -202,6 +205,7 @@ def reporter_node(context: SearchContext, config: RunnableConfig) -> Command:
         },
         goto="research_manager",
     )
+
 
 def evaluator_node(context: SearchContext, config: RunnableConfig) -> Command:
     logger.info(f"start evaluator node: \n{context}")
