@@ -15,7 +15,7 @@ Jiuwen-deepsearch is a deep search agent equipped with planning-retrieval-reflec
 
 #### 使用说明
 
-1.  xxxx
+1.  PPT报告生成需要本地安装marp, npm安装命令: npm install -g @marp-team/marp-cli
 2.  xxxx
 3.  xxxx
 

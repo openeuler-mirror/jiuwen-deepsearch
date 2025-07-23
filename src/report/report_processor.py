@@ -16,7 +16,9 @@ import re
 from datetime import datetime
 
 import shortuuid
+import subprocess
 from langchain_core.runnables import RunnableConfig
+from pathlib import Path
 
 from src.manager.search_context import SearchContext
 
@@ -35,11 +37,11 @@ class DefaultReportFormatProcessor:
 
 class ReportMarkdown(DefaultReportFormatProcessor):
     @staticmethod
-    def __remove_think_tag(report_msg: str) -> str:
+    def remove_think_tag(report_msg: str) -> str:
         return re.sub(r'<think>.*?</think>', '', report_msg, flags=re.DOTALL)
 
     @staticmethod
-    def __remove_useless_lines(report_msg: str) -> str:
+    def remove_useless_lines(report_msg: str) -> str:
         lines = report_msg.splitlines()
         while lines and not lines[0].strip():  # 删除头部空行
             lines.pop(0)
@@ -69,11 +71,50 @@ class ReportMarkdown(DefaultReportFormatProcessor):
         report_output_path = f"{report_output_dir}/{ReportMarkdown.generate_unique_filename()}.md"
         logger.debug(f"report output path: {report_output_path}")
 
-        file_content = ReportMarkdown.__remove_think_tag(report_content)
-        file_content = ReportMarkdown.__remove_useless_lines(file_content)
+        file_content = ReportMarkdown.remove_think_tag(report_content)
+        file_content = ReportMarkdown.remove_useless_lines(file_content)
         with open(report_output_path, 'w', encoding='utf-8') as file:
             file.write(file_content)
             file.flush()
             os.fsync(file.fileno())
 
         return True, report_output_path
+
+class ReportPPT(DefaultReportFormatProcessor):
+    @staticmethod
+    def invoke_marp(middle_file: str, output_file: str):
+        command = [
+            "marp",
+            middle_file,
+            "-o", output_file
+        ]
+        subprocess.run(command, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                   stderr=subprocess.PIPE, text=True)
+
+    @staticmethod
+    def generate_ppt(middle_file: str, final_file_path: str):
+        path = Path(middle_file)
+        if not path.is_file():
+            logging.error(f"middle file path is invalid. generate ppt failed.")
+            return ""
+        else:
+            final_file = final_file_path + "/" + DefaultReportFormatProcessor.generate_unique_filename() + ".pptx"
+            ReportPPT.invoke_marp(middle_file, final_file)
+            return final_file
+
+    @staticmethod
+    def write_file(context: SearchContext, config: RunnableConfig):
+        configurable = config.get("configurable", {})
+        report_output_dir = configurable.get("report_output_path", "")
+        if not report_output_dir:
+            logger.error("Error: Output path is empty.")
+            return True, ""
+        rs, report_output_path = ReportMarkdown.write_file(context, config)
+        if rs and report_output_path != "":
+            report_output_path = ReportPPT.generate_ppt(report_output_path, report_output_dir)
+            if report_output_path != "":
+                return True, report_output_path
+            else:
+                return False, ""
+        else:
+            return rs, report_output_path
