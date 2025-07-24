@@ -16,11 +16,17 @@ from pydantic import BaseModel, Field
 
 
 class TaskType(str, Enum):
+    '''
+    任务类型枚举
+    '''
     INFO_COLLECTING = "info_collecting"
     PROGRAMMING = "programming"
 
 
 class Task(BaseModel):
+    '''
+    任务模型：表示计划中的具体执行单元
+    '''
     type: TaskType = Field(..., description="任务类型（枚举值）")
     title: str = Field(..., description="任务标题，简要描述任务内容")
     description: str = Field(..., description="任务详细说明，明确指定需要收集的数据或执行的编程任务")
@@ -28,6 +34,9 @@ class Task(BaseModel):
 
 
 class Plan(BaseModel):
+    '''
+    计划模型：包含实现目标所需的完整任务序列和描述
+    '''
     language: str = Field(default="zh-CN", description="用户语言：zh-CN、en-US等")
     title: str = Field(..., description="计划标题，概括整体目标")
     thought: str = Field(..., description="计划背后的思考过程，解释任务顺序和选择的理由")
