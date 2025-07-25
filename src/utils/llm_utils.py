@@ -1,9 +1,28 @@
 import json
 import logging
+from typing import Sequence, Any
 
 import json_repair
+from langchain_core.messages import BaseMessage
 
 logger = logging.getLogger(__name__)
+
+
+def messages_to_json(messages: Sequence[Any] | BaseMessage) -> str:
+    result = []
+    if isinstance(messages, BaseMessage):
+        result = messages.model_dump()
+    else:
+        for msg in messages:
+            if isinstance(msg, dict):
+                result.append(msg)
+            elif isinstance(msg, BaseMessage):
+                result.append(msg.model_dump())
+            else:
+                result.append(str(msg))
+                logger.error(f"error message type: {msg}")
+
+    return json.dumps(result, ensure_ascii=False, indent=4)
 
 
 def normalize_json_output(input_data: str) -> str:
@@ -39,5 +58,5 @@ def normalize_json_output(input_data: str) -> str:
         reconstructed = json_repair.loads(processed)
         return json.dumps(reconstructed, ensure_ascii=False)
     except Exception as error:
-        logger.warning(f"JSON normalization error: {error}")
+        logger.error(f"JSON normalization error: {error}")
         return input_data.strip()
