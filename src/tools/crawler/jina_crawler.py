@@ -46,6 +46,9 @@ class JinaCrawler(BaseModel):
         except BaseException as e:
             error_msg = f"Crawl Tool: Jina request failed. Error: {repr(e)}"
             logger.error(error_msg)
+            return {
+                "error_msg": error_msg,
+            }
 
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@ class BasicWebCrawler(BaseModel):
 
     def crawl(self, url: str):
         response = requests.get(url)
-        if response.status_code != 200:
+        if response.status_code == 200:
             soup = BeautifulSoup(response.text, "lxml")
             context_result = ""
             # title
@@ -56,7 +56,11 @@ class BasicWebCrawler(BaseModel):
                 "images": images,
             }
         else:
-            logger.error(f"Crawl Tool: Html request failed, {url}, {response.content}.")
+            error_msg = f"Crawl Tool: Html request failed."
+            logger.error(error_msg)
+            return {
+                "error_msg": error_msg,
+            }
 
 
 if __name__ == "__main__":
