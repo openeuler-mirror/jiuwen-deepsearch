@@ -13,9 +13,9 @@ import logging
 from typing import List, cast
 
 from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage, AIMessageChunk
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
-from langchain_core.messages import BaseMessage, AIMessageChunk
 
 from src.config.configuration import Configuration
 from .nodes import (
@@ -78,7 +78,7 @@ class Workflow:
                                                                    expected_type=int),
                 "report_style": report_style,
                 "report_format": report_format,
-                "max_step_num": Configuration.get_conf("planner", "max_task_num", expected_type=int),
+                "max_step_num": Configuration.get_conf("planner", "max_step_num", expected_type=int),
                 "report_output_path": Configuration.get_conf("report", "output_path", expected_type=str),
                 "max_search_results": Configuration.get_conf("info_collector", "max_search_results", expected_type=int),
                 "max_crawl_length": Configuration.get_conf("info_collector", "max_crawl_length", expected_type=int),
