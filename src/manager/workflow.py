@@ -109,4 +109,6 @@ class Workflow:
                 "content": message.content,
                 "message_type": message.__class__.__name__
             }
+            if message.response_metadata.get("finish_reason"):
+                output_message["finish_reason"] = message.response_metadata.get("finish_reason")
             yield json.dumps(output_message, ensure_ascii=False)
