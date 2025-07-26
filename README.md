@@ -10,33 +10,34 @@
 - [🚀 快速开始](#快速开始)
 - [🔍 搜索引擎支持](#搜索引擎支持)
 - [🌟 核心特性](#核心特性)
-- [🏗️ API参考](#API参考)
+- [🔧 执行流程](#执行流程)
+- [🏗️ API参考](#api参考)
 - [📚 版本特性追踪](#版本特性追踪)
 - [📜 许可证](#许可证)
 - [🙏 致谢](#致谢)
-- [❓ 常见问题FAQ](#常见问题FAQ)
+- [❓ 常见问题FAQ](#常见问题faq)
 
 
-## 💡 九问深度搜索是什么？
+## 九问深度搜索是什么？
 
 ---
 **Jiuwen-DeepSearch** 九问深度搜索是一款知识增强的深度检索与研究引擎。我们的目标是利用结构化知识及大模型，融合各种工具，提供精准、灵活、高效深度搜索及研究能力。我们支持不同数据格式的领域知识库接入，支持多种检索模式的选择，并通过知识增强的查询规划及反思，提供可靠、可溯源答案及报告。
 ![流程介绍](./assets/overview.jpg)
 
-## 🎬 演示案例
+## 演示案例
 
 ---
 - Query1：比较全球Top5光伏企业在东南亚的产能布局，量化分析美国IRA法案对其海外供应链成本的影响
 
 ![全球TOP5光伏企业在东南亚的产能布局及美国IRA法案影响分析](./assets/example_globaltop5.jpg)
-全文请见:[全球TOP5光伏企业在东南亚的产能布局及美国IRA法案影响分析](./examples/全球TOP5光伏企业在东南亚的产能布局及美国IRA法案影响分析.md)
+详见：[报告全文](./examples/全球TOP5光伏企业在东南亚的产能布局及美国IRA法案影响分析.md)
 
 -  Query2：分析医学影像AI辅助诊断系统的临床落地瓶颈
 ![example2_medical.jpg](./assets/example_medical.jpg)
- 全文请见[医学影像AI辅助诊断系统临床落地瓶颈分析](./examples/医学影像AI辅助诊断系统临床落地瓶颈分析.md)
+ 详见：[报告全文](./examples/医学影像AI辅助诊断系统临床落地瓶颈分析.md)
 
 
-## 🔥 最新版本特性
+## 最新版本特性
 
 ---
 - 新增outline节点，实现报告大纲生成
@@ -47,7 +48,7 @@
 
 更多特性详见： [Jiuwen-deepsearch release notes](./docs/release_notes.md)
 
-## 🚀 快速开始
+## 快速开始
 
 ---
 ### 环境要求
@@ -95,7 +96,7 @@ uv run main.py query (例：uv run main.py 今天杭州的天气怎么样)
 uv run start_server.py IP port (例：uv run start_server.py --host 127.0.0.1 -p 8888)
 ```
 
-## 📚 搜索引擎支持
+## 搜索引擎支持
 
 ---
 ### 网页搜索
@@ -141,7 +142,7 @@ RAGFLOW_API_URL="http//xxx"
 RAGFLOW_API_KEY="ragflow-xxx"
 ```
 
-## 🌟 核心特性
+## 核心特性
 
 ---
 - **精准融合检索**
@@ -167,7 +168,7 @@ RAGFLOW_API_KEY="ragflow-xxx"
 本系统实现智能化深度研究的流程，基于用户的报告生成需求，进行多次全面的网络信息检索和/或代码执行，通过不断总结推理以获取满足报告撰写的必要信息后，为用户提供内容丰富的研究报告。
 ![流程图](assets/diagram.svg)
 
-## 🏗️ API参考
+## API参考
 
 ---
 ### research接口
@@ -287,6 +288,26 @@ Content-Type: application/json
 }
 ```
 
+### LLMWrapper接口
+LLMWrapper封装langchain_openai.ChatOpenAI和langchain_deepseek.ChatDeepSeek，参数从配置文件.env获取，返回ChatOpenAI或ChatDeepSeek实例。
+#### 构造参数
+|   字段名    |          字段类型           |                           字段描述                           |
+| :---------: | :-------------------------: | :----------------------------------------------------------: |
+| base_url | string | LLM API的根URL |
+| model | string | 调用模型名称 |
+| api_key | string | LLM API的密钥，用于请求身份认证 |
+| api_type | string | LLM API的类型，支持openai和deepseek，默认openai |
+
+#### 样例参考
+
+```python
+from langchain_core.messages import HumanMessage
+from src.llm.llm_wrapper import LLMWrapper
+
+client = LLMWrapper("basic")
+msgs = [HumanMessage(content="Hello")]
+resp = client.invoke(msgs)
+```
 
 
 ### MultiServerMCPClient接口
@@ -332,16 +353,16 @@ async with client.session("math") as session:
     tools = await load_mcp_tools(session)
 ```
 
-## ❓ 版本特性追踪
+## 版本特性追踪
 
 ---
 各版本特性详见 [Jiuwen-deepsearch release notes](./docs/release_notes.md) 
-## 📜 许可证
+## 许可证
 
 ---
 **Jiuwen-DeepSearch**使用木兰协议(Mulan PSL)，木兰协议是由中国开放原子开源基金会发布的开源许可证,旨在鼓励中国开源社区的发展。该协议强调代码共享和社区贡献,允许用户自由使用、修改和分发代码,同时要求在分发时保留原始版权声明和许可证文本,并标明修改内容。请见 [License](https://gitee.com/openeuler/jiuwen-deepsearch/blob/master/LICENSE)
 
-## 🙏 致谢
+## 致谢
 
 ---
 **Jiuwen-DeepSearch**的构建离不开开源社区的卓越成果。我们由衷感谢所有为**Jiuwen-DeepSearch**的实现提供支持的项目及贡献者，正是他们的努力，才让本项目得以落地。
@@ -355,7 +376,7 @@ async with client.session("math") as session:
 
 特别感谢上述项目的开发团队及所有社区贡献者，正是你们的持续迭代、文档完善与开源共享，让**Jiuwen-DeepSearch**能够站在巨人的肩膀上快速成长。这份开源精神也将激励我们在迭代中保持开放，期待未来能为社区贡献更多价值。
 
-## ❓ 常见问题FAQ
+## 常见问题FAQ
 
 ---
 常见问题详见 [FAQ列表](./docs/release_notes.md) 
