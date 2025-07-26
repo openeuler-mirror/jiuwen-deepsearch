@@ -14,7 +14,7 @@ from typing import List, cast
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.state import CompiledStateGraph
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage, AIMessageChunk
 
 from src.config.configuration import Configuration
 
@@ -85,16 +85,25 @@ class Workflow:
             }
         }
 
-        async for _, _, message_update in self.graph.astream(
-            input=input, config=config, stream_mode=["messages", "updates"], subgraphs=True,
+        async for agent, _, message_update in self.graph.astream(
+                input=input, config=config, stream_mode=["messages", "updates"], subgraphs=True,
         ):
-            logger.debug(f"Received message: {message_update}")
+            logger.debug(f"Received message: {message_update}, agent: {agent}")
             if isinstance(message_update, dict):
                 continue
-            message, _ = cast(tuple[BaseMessage, any], message_update)
+            message, metadata = cast(tuple[BaseMessage, any], message_update)
+            if not isinstance(message, AIMessageChunk):
+                continue
+
+            agent_name = message.name
+            if not agent_name:
+                if len(agent) > 0:
+                    agent_name = agent[0].split(":")[0]
+                elif "langgraph_node" in metadata:
+                    agent_name = metadata["langgraph_node"]
             output_message: dict[str, any] = {
                 "session_id": session_id,
-                "agent": message.name,
+                "agent": agent_name,
                 "id": message.id,
                 "role": "assistant",
                 "content": message.content,
