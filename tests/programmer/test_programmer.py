@@ -1,7 +1,9 @@
 import logging
-from src.programmer import Programmer
+
 from langchain_core.runnables import RunnableConfig
-from src.manager.search_context import Task, TaskType
+
+from src.manager.search_context import Step, StepType
+from src.programmer import Programmer
 
 
 def setup_logging(log_level: str):
@@ -19,11 +21,11 @@ if __name__ == "__main__":
 
     programmer = Programmer(config)
 
-    task = Task(
+    task = Step(
         title="数学算式计算",
         description="计算241 - (-241) + 1的精确结果，并解释步骤。",
-        task_type=TaskType("programming"),
-        task_result=None
+        type=StepType("programming"),
+        step_result=None
     )
 
     result = programmer.run(task)
