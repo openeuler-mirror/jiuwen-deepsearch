@@ -33,6 +33,8 @@ async def research(request: ResearchRequest):
             messages=request.messages,
             session_id=request.session_id,
             local_datasets=request.local_datasets,
+            report_style=request.report_style,
+            report_format=request.report_format,
         ),
         media_type="text/event-stream",
     )

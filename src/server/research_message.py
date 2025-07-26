@@ -18,10 +18,8 @@ class ResearchRequest(BaseModel):
     messages: str = Field(None, description="user message")
     local_datasets: Optional[List[str]] = Field(None, description="local knowledge datasets")
     session_id: Optional[str] = Field(None, description="session id")
-    max_plan_iterations: Optional[int] = Field(5, description="max planning iterations, default 5")
-    max_step_num: Optional[int] = Field(10, description="max step number, default 10")
     report_style: Optional[str] = Field(None, description="report style")
-    report_type: Optional[str] = Field(None, description="report type")
+    report_format: Optional[str] = Field(None, description="report format")
 
 
 class ResearchResponse(BaseModel):
