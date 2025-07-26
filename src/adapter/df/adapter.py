@@ -158,6 +158,8 @@ async def _astream_workflow_adapter(req: ChatRequest):
             "content": json_msg["content"],
         }
 
+        if "finish_reason" in json_msg:
+            event_stream_message["finish_reason"] = json_msg["finish_reason"]
         event_msg = _make_event("message_chunk", event_stream_message)
         logging.debug(f"event message: {event_msg}")
         yield event_msg
