@@ -20,7 +20,7 @@ from langchain_core.runnables import RunnableConfig
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.prebuilt import create_react_agent
 
-from src.manager.search_context import SearchContext, Task, TaskType
+from src.manager.search_context import SearchContext, Step
 from src.tools.web_search import get_web_search_tool
 from src.tools.crawl import get_crawl_tool
 from src.llm.llm_wrapper import LLMWrapper
@@ -46,12 +46,12 @@ class Collector:
         dynamic_prompt = apply_system_prompt("collector", context, self.config)
         return dynamic_prompt
 
-    def _agent_input_build(self, task: Task):
+    def _agent_input_build(self, task: Step):
         agent_input = {"messages": [HumanMessage(
             content=f"Now deal with the task:\n[Task Title]: {task.title}\n[Task Description]: {task.description}\n\n")]}
         return agent_input
 
-    async def get_info(self, task: Task):
+    async def get_info(self, task: Step):
         agent_input = self._agent_input_build(task)
         result = self.agent.invoke(input=agent_input, config={"recursion_limit": self.recursion_limit})
         messages = result.get("messages", [])
@@ -65,4 +65,4 @@ class Collector:
             else:
                 clean_result = f"Error: Unexpected message type: {type(last_message)}. Expected AIMessage."
                 logger.error(clean_result)
-        task.task_result = clean_result
+        task.step_result = clean_result

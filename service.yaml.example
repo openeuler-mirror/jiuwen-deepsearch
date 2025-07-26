@@ -7,7 +7,7 @@ workflow:
   recursion_limit: 30
 
 planner:
-  max_task_num: 2
+  max_step_num: 2
 
 info_collector:
   max_search_results: 5

@@ -12,13 +12,13 @@
 # ******************************************************************************/
 import logging
 
-from pydantic import BaseModel
-from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.runnables import RunnableConfig
+from langgraph.prebuilt import create_react_agent
+from pydantic import BaseModel
 
 from src.llm import LLMWrapper
-from src.manager.search_context import Task, SearchContext
+from src.manager.search_context import Step, SearchContext
 from src.prompts import apply_system_prompt
 from src.tools.python_programmer import python_programmer_tool
 
@@ -40,7 +40,7 @@ class Programmer:
             context=context,
             config=self._config)
 
-    def _build_agent_input(self, task: Task):
+    def _build_agent_input(self, task: Step):
         class AgentInput(BaseModel):
             messages: list
 
@@ -49,7 +49,7 @@ class Programmer:
                 content=f"# Current Task\n\n## Title\n\n{task.title}\n\n## Description\n\n{task.description}\n\n"
             )])
 
-    def run(self, task: Task) -> str:
+    def run(self, task: Step) -> str:
         agent_input = self._build_agent_input(task)
         try:
             logging.debug(f"reporter prompts: {agent_input}")

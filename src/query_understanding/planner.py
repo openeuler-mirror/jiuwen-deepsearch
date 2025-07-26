@@ -8,7 +8,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig
 
 from src.llm import LLMWrapper
-from src.manager.search_context import SearchContext, Plan, TaskType
+from src.manager.search_context import SearchContext, Plan, StepType
 from src.prompts import apply_system_prompt
 from src.utils.llm_utils import normalize_json_output, messages_to_json
 
@@ -85,12 +85,12 @@ def try_repair_plan(llm_output: str) -> Plan | dict:
     if "is_research_completed" not in data or not isinstance(data["is_research_completed"], bool):
         data["is_research_completed"] = False
 
-    # 修复tasks字段
-    if "tasks" not in data or not isinstance(data["tasks"], list):
-        data["tasks"] = []
+    # 修复steps字段
+    if "steps" not in data or not isinstance(data["steps"], list):
+        data["steps"] = []
 
-    tasks = []
-    for task in data["tasks"]:
+    steps = []
+    for task in data["steps"]:
         # 确保每个任务项是字典
         if not isinstance(task, dict):
             continue
@@ -111,15 +111,15 @@ def try_repair_plan(llm_output: str) -> Plan | dict:
             continue
 
         # 修复type字段
-        if "type" not in task or task["type"] not in (TaskType.INFO_COLLECTING.value, TaskType.PROGRAMMING.value):
-            task["type"] = TaskType.INFO_COLLECTING.value
+        if "type" not in task or task["type"] not in (StepType.INFO_COLLECTING.value, StepType.PROGRAMMING.value):
+            task["type"] = StepType.INFO_COLLECTING.value
 
-        # 删除task.task_result字段
-        task["task_result"] = None
+        # 删除task.step_result
+        task["step_result"] = None
 
-        tasks.append(task)
+        steps.append(task)
 
-    data["tasks"] = tasks
+    data["steps"] = steps
 
     try:
         new_plan = Plan.model_validate(data)
@@ -139,7 +139,7 @@ if __name__ == "__main__":
 
     config: RunnableConfig = {
         "configurable": {
-            "max_task_num": 5,
+            "max_step_num": 5,
             "language": "zh-CN"
         }
     }

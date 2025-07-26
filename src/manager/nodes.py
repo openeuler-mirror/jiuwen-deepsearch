@@ -16,7 +16,7 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.types import Command
 
 from src.llm.llm_wrapper import LLMWrapper
-from src.manager.search_context import SearchContext, TaskType
+from src.manager.search_context import SearchContext, StepType
 from src.programmer import Programmer
 from src.prompts import apply_system_prompt
 from src.query_understanding.planner import Planner
@@ -76,14 +76,14 @@ def research_manager_node(context: SearchContext, config: RunnableConfig) -> Com
     else:
         # Traverse the tasks in the plan, if any task has not been executed, call the relevant module to execute it.
         is_all_tasks_finish: bool = True
-        for task in current_plan.tasks:
-            if not task.task_result:
+        for task in current_plan.steps:
+            if not task.step_result:
                 is_all_tasks_finish = False
                 break
         if not is_all_tasks_finish:
-            if task.type == TaskType.INFO_COLLECTING:
+            if task.type == StepType.INFO_COLLECTING:
                 return Command(goto="info_collector")
-            if task.type == TaskType.PROGRAMMING:
+            if task.type == StepType.PROGRAMMING:
                 return Command(goto="programmer")
             logger.error(f"unknown task type: {task.type}")
             return Command(goto="__end__")
@@ -130,19 +130,19 @@ async def info_collector_node(context: SearchContext, config: RunnableConfig) ->
     messages = []
     async_collecting = []
     collect_tasks = []
-    for task in current_plan.tasks:
-        if task.type == TaskType.INFO_COLLECTING and not task.task_result:
+    for task in current_plan.steps:
+        if task.type == StepType.INFO_COLLECTING and not task.step_result:
             async_collecting.append(collector.get_info(task))
             collect_tasks.append(task)
     await asyncio.gather(*async_collecting)
 
     for task in collect_tasks:
-        collected_infos.append(task.task_result)
+        collected_infos.append(task.step_result)
         messages.append(HumanMessage(
-            content=task.task_result,
+            content=task.step_result,
             name="info_collector",
         ))
-        logger.info(f"The result of {task.title} is: {task.task_result}")
+        logger.info(f"The result of {task.title} is: {task.step_result}")
 
     return Command(
         update={
@@ -161,12 +161,12 @@ def programmer_node(context: SearchContext, config: RunnableConfig) -> Command:
     collected_infos = context.get("collected_infos", [])
     messages = []
     programmer = Programmer(config=config)
-    for task in current_plan.tasks:
-        if task.type == TaskType.PROGRAMMING and not task.task_result:
-            task.task_result = programmer.run(task)
-            collected_infos.append(task.task_result)
+    for task in current_plan.steps:
+        if task.type == StepType.PROGRAMMING and not task.step_result:
+            task.step_result = programmer.run(task)
+            collected_infos.append(task.step_result)
             messages.append(HumanMessage(
-                content=task.task_result,
+                content=task.step_result,
                 name="programmer"
             ))
     return Command(

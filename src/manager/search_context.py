@@ -15,7 +15,7 @@ from langgraph.graph import MessagesState
 from pydantic import BaseModel, Field
 
 
-class TaskType(str, Enum):
+class StepType(str, Enum):
     '''
     任务类型枚举
     '''
@@ -23,14 +23,14 @@ class TaskType(str, Enum):
     PROGRAMMING = "programming"
 
 
-class Task(BaseModel):
+class Step(BaseModel):
     '''
     任务模型：表示计划中的具体执行单元
     '''
-    type: TaskType = Field(..., description="任务类型（枚举值）")
+    type: StepType = Field(..., description="任务类型（枚举值）")
     title: str = Field(..., description="任务标题，简要描述任务内容")
     description: str = Field(..., description="任务详细说明，明确指定需要收集的数据或执行的编程任务")
-    task_result: Optional[str] = Field(default=None, description="任务执行结果，完成后由系统进行填充")
+    step_result: Optional[str] = Field(default=None, description="任务执行结果，完成后由系统进行填充")
 
 
 class Plan(BaseModel):
@@ -41,7 +41,7 @@ class Plan(BaseModel):
     title: str = Field(..., description="计划标题，概括整体目标")
     thought: str = Field(..., description="计划背后的思考过程，解释任务顺序和选择的理由")
     is_research_completed: bool = Field(..., description="是否已完成信息收集工作")
-    tasks: List[Task] = Field(default_factory=list, description="info_collecting | programming 类型的任务")
+    steps: List[Step] = Field(default_factory=list, description="info_collecting | programming 类型的任务")
 
 
 class SearchContext(MessagesState):
