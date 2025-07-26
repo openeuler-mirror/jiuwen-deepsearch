@@ -36,16 +36,7 @@ def entry_node(context: SearchContext, config: RunnableConfig) -> Command:
             goto="plan_reasoning",
         )
     else:
-        chat_prompt = apply_system_prompt("chat", context, config)
-        response = (
-            LLMWrapper("basic")
-            .invoke(chat_prompt)
-        )
-        logger.info(f"Chat response: {response.content}")
         return Command(
-            update={
-                "messages": [AIMessage(content=response.content, name="entry")],
-            },
             goto="__end__",
         )
 
