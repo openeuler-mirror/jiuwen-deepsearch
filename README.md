@@ -22,19 +22,19 @@
 
 ---
 **Jiuwen-DeepSearch** 九问深度搜索是一款知识增强的深度检索与研究引擎。我们的目标是利用结构化知识及大模型，融合各种工具，提供精准、灵活、高效深度搜索及研究能力。我们支持不同数据格式的领域知识库接入，支持多种检索模式的选择，并通过知识增强的查询规划及反思，提供可靠、可溯源答案及报告。
+
 ![流程介绍](./assets/overview.jpg)
 
 ## 演示案例
 
 ---
 - Query1：比较全球Top5光伏企业在东南亚的产能布局，量化分析美国IRA法案对其海外供应链成本的影响
-
 ![全球TOP5光伏企业在东南亚的产能布局及美国IRA法案影响分析](./assets/example_globaltop5.jpg)
 详见：[报告全文](./examples/全球TOP5光伏企业在东南亚的产能布局及美国IRA法案影响分析.md)
 
--  Query2：分析医学影像AI辅助诊断系统的临床落地瓶颈
+- Query2：分析医学影像AI辅助诊断系统的临床落地瓶颈
 ![example2_medical.jpg](./assets/example_medical.jpg)
- 详见：[报告全文](./examples/医学影像AI辅助诊断系统临床落地瓶颈分析.md)
+详见：[报告全文](./examples/医学影像AI辅助诊断系统临床落地瓶颈分析.md)
 
 
 ## 最新版本特性
@@ -317,9 +317,9 @@ resp = client.invoke(msgs)
 |:-------: |:-------: |:------: |
 | connections| dict[str, Connection]或None | 映射服务器名称到连接配置的字典。如果为 None则不建立初始连接。 |
 
-### 样例参考
+#### 样例参考
 
-#### 工具调用时启动新会话
+##### 工具调用时启动新会话
 
 ```python
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -342,7 +342,7 @@ client = MultiServerMCPClient(
 all_tools = await client.get_tools()
 ```
 
-#### 显式启动目标会话
+##### 显式启动目标会话
 
 ```python
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -379,4 +379,4 @@ async with client.session("math") as session:
 ## 常见问题FAQ
 
 ---
-常见问题详见 [FAQ列表](./docs/release_notes.md) 
+常见问题详见 [FAQ列表](./docs/FAQ.md) 
